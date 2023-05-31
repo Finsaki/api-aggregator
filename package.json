@@ -1,0 +1,20 @@
+{
+  "name": "api-aggregator",
+  "version": "0.0.1",
+  "description": "The purpose of this project is to create an API aggregator -application which would fetch data from multiple external API endpoints and then combine them into one result.",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm install",
+    "start": "nodemon ./src/server/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "express": "^4.18.2",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.22"
+  }
+}
