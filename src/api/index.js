@@ -4,6 +4,7 @@ const router = express.Router();
 const catchAsync = require("../utils/catchAsync");
 const { APIURI: URI } = require("../utils/config");
 const { checkCache, saveToCache } = require("../cache/cacheHelper");
+const { validateId, validateApiData } = require("../utils/validations");
 
 router.get("/ping", (req, res) => {
   res.send({
@@ -12,9 +13,10 @@ router.get("/ping", (req, res) => {
 });
 
 //aggregate user todo data from external APIs
+//Axios resolves on 404. So if we want partial data consider adding validateStatus config to axios call
 router.get(
   "/user-todo/:id",
-  //TODO: Add validation for id
+  validateId,
   checkCache,
   catchAsync(async (req, res, next) => {
     if (req.cached) return res.send(req.cached);
@@ -34,7 +36,7 @@ router.get(
       completed,
       description: body,
     };
-    //TODO: Add validation for apiData
+    validateApiData(apiData);
     await saveToCache({ id, ...apiData });
     //respond without id
     return res.send(apiData);
