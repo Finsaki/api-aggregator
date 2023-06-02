@@ -2,7 +2,7 @@ const axios = require("axios");
 const ExpressError = require("./ExpressError");
 const { APIURI: URI } = require("./config");
 
-const axiosMockData = () => {
+const axiosMockValidData = () => {
   axios.get.mockImplementation((url) => {
     switch (url) {
       case `${URI}/1/`:
@@ -12,6 +12,52 @@ const axiosMockData = () => {
       case `${URI}/1/todos?id=1`:
         return Promise.resolve({
           data: todoResponse,
+        });
+      case `${URI}/1/comments?id=1`:
+        return Promise.resolve({
+          data: commentResponse,
+        });
+      default:
+        return Promise.reject(new ExpressError("404 Data Not Found", 404));
+    }
+  });
+};
+
+//These could be implemented with axiosMockValidData but Ill leave them separate for easier manual testing
+const axiosMockInvalidData = () => {
+  axios.get.mockImplementation((url) => {
+    switch (url) {
+      case `${URI}/1/`:
+        return Promise.resolve({
+          data: userResponse,
+        });
+      case `${URI}/1/todos?id=1`:
+        return Promise.resolve({
+          //we respond with invalid data
+          data: invalidTodoResponse,
+        });
+      case `${URI}/1/comments?id=1`:
+        return Promise.resolve({
+          data: commentResponse,
+        });
+      default:
+        return Promise.reject(new ExpressError("404 Data Not Found", 404));
+    }
+  });
+};
+
+//These could be implemented with axiosMockValidData but Ill leave them separate for easier manual testing
+const axiosMockMissingData = () => {
+  axios.get.mockImplementation((url) => {
+    switch (url) {
+      case `${URI}/1/`:
+        return Promise.resolve({
+          data: userResponse,
+        });
+      case `${URI}/1/todos?id=1`:
+        return Promise.resolve({
+          //we respond with missing data
+          data: missingTodoResponse,
         });
       case `${URI}/1/comments?id=1`:
         return Promise.resolve({
@@ -75,7 +121,20 @@ const commentResponse = [
   },
 ];
 
+const missingTodoResponse = [{}];
+
+const invalidTodoResponse = [
+  {
+    userId: 1,
+    id: 1,
+    title: 23,
+    completed: "asd",
+  },
+];
+
 module.exports = {
   expectedResponse,
-  axiosMockData,
+  axiosMockValidData,
+  axiosMockInvalidData,
+  axiosMockMissingData,
 };
