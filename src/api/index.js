@@ -2,6 +2,8 @@ const express = require("express");
 const axios = require("axios");
 const router = express.Router();
 const catchAsync = require("../utils/catchAsync");
+const { APIURI: URI } = require("../utils/config");
+const { checkCache, saveToCache } = require("../cache/cacheHelper");
 
 router.get("/ping", (req, res) => {
   res.send({
@@ -9,19 +11,34 @@ router.get("/ping", (req, res) => {
   });
 });
 
-router.get("/weather-data/:city", (req, res) => {
-  const { city } = req.params;
-  return res.send(`Hello from ${city}`);
-});
-
-//test axios
+//aggregate user todo data from external APIs
 router.get(
-  "/axios-test",
+  "/user-todo/:id",
+  //TODO: Add validation for id
+  checkCache,
   catchAsync(async (req, res, next) => {
-    const { data: response } = await axios.get(
-      "https://api.chucknorris.io/jokes/random"
-    );
-    return res.send(response.value);
+    if (req.cached) return res.send(req.cached);
+    console.log("reached");
+    const { id } = req.params;
+    //data -> data: user -> data: { name, username }
+    const { data: { name, username } = {} } = await axios.get(`${URI}/${id}/`);
+    //data -> data: [todo, ...rest] -> data: [{title, completed}, ...rest]
+    const { data: [{ title, completed } = {}, ...restOfPossibleTodos] = [] } =
+      await axios.get(`${URI}/${id}/todos?id=1`);
+    //data -> data: [comment, ...rest] -> data: [{body}, ...rest]
+    const { data: [{ body } = {}, ...restOfPossibleComments] = [] } =
+      await axios.get(`${URI}/${id}/comments?id=1`);
+    const apiData = {
+      name,
+      username,
+      title,
+      completed,
+      description: body,
+    };
+    //TODO: Add validation for apiData
+    await saveToCache({ id, ...apiData });
+    //respond without id
+    return res.send(apiData);
   })
 );
 
