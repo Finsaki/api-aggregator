@@ -56,8 +56,19 @@ const saveToCache = async (apiData) => {
   return await database.run(sqlQuery, apiDataArray);
 };
 
+const clearCache = async () => {
+  const sqlQuery = `DELETE FROM apiData;`;
+  return await database.run(sqlQuery);
+};
+
+const closeDatabase = async function () {
+  await database.close();
+};
+
 module.exports = {
   initDatabase,
   checkCache,
   saveToCache,
+  clearCache,
+  closeDatabase,
 };

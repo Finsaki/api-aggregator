@@ -18,7 +18,6 @@ router.get(
   checkCache,
   catchAsync(async (req, res, next) => {
     if (req.cached) return res.send(req.cached);
-    console.log("reached");
     const { id } = req.params;
     //data -> data: user -> data: { name, username }
     const { data: { name, username } = {} } = await axios.get(`${URI}/${id}/`);

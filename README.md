@@ -12,7 +12,7 @@ Starting the application
 
 > npm start
 
-Testing the application (no tests yet)
+Testing the application
 
 > npm test
 
@@ -30,7 +30,7 @@ It would seem that only user with id of 1 has todos and comments in jsonplacehol
 - To reduce amount of external API calls made, similar requests should be fetched from local cache instead. - DONE
 - External API data should be validated before attempting to save to cache database.
 - Id should be validated before making requests with it. (number, min, max)
-- Tests should be implemented by mocking the external API responses.
+- Tests should be implemented by mocking the external API responses. - PARTLY DONE (add validation tests)
 - GitHub actions should be set up for automated tests on changes. - DONE
 
 ## Initial ideas (can change)

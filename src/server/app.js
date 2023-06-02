@@ -8,7 +8,6 @@ const { DBFILEPATH } = require("../utils/config");
 
 const app = express();
 
-//TODO: make tests using test database + mocking APIs
 if (process.env.NODE_ENV !== "test") {
   try {
     initDatabase(DBFILEPATH);
@@ -26,6 +25,14 @@ app.use("/api/", api_endpoints);
 
 app.all("*", (req, res, next) => {
   next(new ExpressError("404 Path Not Found", 404));
+});
+
+//Override Axios default 404 error
+app.use((err, req, res, next) => {
+  if (err.name === "AxiosError" && err.response.status === 404) {
+    err = new ExpressError("404 Data Not Found", 404);
+  }
+  next(err);
 });
 
 //final error handler, use 500 as default if no error specified
